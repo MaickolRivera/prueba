@@ -80,7 +80,7 @@ function App() {
       </form>
 
       {errorForm && <p className="text-red-600">{errorForm}</p>}
-
+      
       <ul>
         {
           cuentas.map((cuenta) => (

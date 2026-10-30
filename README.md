@@ -1,47 +1,75 @@
-# Arranque de la prueba técnica full-stack 
+# Aravia · Software Contable
 
-Backend y frontend listos para correr, ya conectados entre sí. Es el punto de partida de la prueba, para que no gastes tiempo en instalar y configurar.
+Registro de cuentas contables con un código jerárquico. API en NestJS y frontend en React.
 
-| Carpeta | Qué hay | Puerto |
-|---------|---------|:------:|
-| `api/` | NestJS con TypeScript, con CORS habilitado hacia el front | 3000 |
-| `web/` | React con Vite y TypeScript | 5173 |
+![Preview de la aplicación](./web/public/preview.png)
 
-Trae **solo lo que generan los CLI de Nest y de Vite**. No hay estructura de capas, ni entidades, ni interfaces de repositorio, ni librería de componentes, ni manejo de estado. Esas decisiones son tuyas y son parte de lo que se evalúa, así que cuéntanos en voz alta por qué las tomas. Si quieres reorganizar las carpetas, hazlo y explica por qué.
+## Qué se puede hacer
 
-## Requisitos
+- Crear cuentas con código, nombre y naturaleza (DEBITO o CREDITO) desde el formulario.
+- Ver el listado de cuentas creadas.
+- Validaciones al crear (la API responde con el motivo y el front lo muestra bajo el formulario):
+  - El código es un entero de 1 a 6 dígitos (1 a 999999).
+  - El código no se puede repetir (409).
+  - La cuenta debe tener padre, deducido del propio código (400 si no existe).
 
-- **Node 22** (está en `.nvmrc`, con `nvm use` queda listo).
-- **npm 10 o superior.** Con npm 9.2 la instalación falla. Revisa con `npm -v` antes de empezar.
+### Jerarquía de códigos
+
+El código define el árbol. Los niveles son de 1, 2, 4 y 6 dígitos y el padre es el prefijo del nivel superior:
+
+
+1            raíz
+└─ 11        hijo de 1
+   └─ 1105   hijo de 11
+      └─ 110505   hijo de 1105
+
+
+Por eso las cuentas se crean de arriba hacia abajo: para registrar 1105 ya tiene que existir 11. Los códigos de 3 o 5 dígitos se rechazan porque no tienen padre posible.
 
 ## Cómo correrlo
 
-```bash
+Requisitos: Node 22 (.nvmrc) y npm 10 o superior.
+
+bash
 npm install     # instala la raíz, api/ y web/
 npm run dev     # levanta los dos a la vez
-```
 
-Abre http://localhost:5173. Si ves *La API respondió: Hello World!*, el frontend está hablando con el backend y puedes empezar.
 
-Esa pantalla existe solo para comprobar la conexión. Bórrala y construye lo tuyo.
-
-## Scripts
+Abre http://localhost:5173.
 
 | Script | Qué hace |
 |--------|----------|
-| `npm run dev` | Levanta la API y el front juntos, en modo watch |
-| `npm run dev:api` | Solo la API |
-| `npm run dev:web` | Solo el front |
-| `npm run build` | Compila los dos |
-| `npm test` | Corre las pruebas de la API con Vitest |
-| `npm run lint` | Revisa los dos con oxlint |
+| npm run dev | API (3000) y front (5173) juntos, en modo watch |
+| npm run dev:api / npm run dev:web | Solo uno de los dos |
+| npm run build | Compila los dos |
+| npm test | Pruebas de la API con Vitest |
+| npm run lint | Revisa los dos con oxlint |
+
+## API
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | /cuenta | Crea una cuenta |
+| GET | /cuenta | Lista las cuentas |
+| PATCH | /cuenta/:id | Actualiza una cuenta (revalida código y padre si cambia el código) |
+| DELETE | /cuenta/:id | Elimina una cuenta |
+
+Ejemplo:
+
+json
+POST /cuenta
+{ "codigo": 1105, "nombre": "Caja general", "naturaleza": "DEBITO" }
+
 
 ## Configuración
 
-El front lee la URL de la API de `VITE_API_URL`. Si no defines la variable, usa `http://localhost:3000`, así que no tienes que configurar nada para empezar. El ejemplo está en [`web/.env.example`](./web/.env.example).
+- El front lee la URL de la API de VITE_API_URL (por defecto http://localhost:3000). Ver [web/.env.example](./web/.env.example).
+- La API acepta peticiones del origen WEB_ORIGIN (por defecto http://localhost:5173).
 
-La API acepta peticiones del origen que diga `WEB_ORIGIN`, y por defecto `http://localhost:5173`. Si cambias el puerto del front, cambia esa variable.
+## Decisiones y límites
 
-## Antes de entregar
+- Persistencia en memoria. Las cuentas viven en el service y se pierden al reiniciar la API. Con una base de datos, el id lo asignaría el motor.
+- codigo es numérico. Alcanza porque el primer dígito nunca es 0, pero no admitiría códigos con ceros a la izquierda.
+- Fuera de alcance por ahora: impedir borrar o recodificar una cuenta que ya tiene hijas, y mostrar las cuentas como árbol en el front (existe flatToTree en api/src/cuenta/utils/, pero aún no está conectado).
 
-Reemplaza este archivo por tu propio `README.md`, con cómo se corre tu proyecto, qué decisiones tomaste, qué dejaste afuera y qué harías con más tiempo.
+(se me fue el internet a 12 minutos de que la prueba finalizara 😿)
