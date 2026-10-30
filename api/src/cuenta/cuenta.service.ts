@@ -22,27 +22,16 @@ export class CuentaService {
     }
   }
 
-  /**
-   * Los niveles del código son 1, 2, 4 y 6 dígitos (1 → 11 → 1105 → 110505).
-   * El padre es el prefijo del nivel inmediatamente superior; la raíz no tiene.
-   */
-  private parentCodigo(codigo: number): number | null {
+  // Niveles 1 → 11 → 1105 → 110505: el padre es el prefijo del nivel superior
+  private assertPadreExiste(codigo: number) {
     const str = String(codigo);
     const parentLength = PARENT_LENGTH[str.length];
     if (parentLength === undefined) {
-      throw new BadRequestException(
-        `El código ${codigo} debe tener 1, 2, 4 o 6 dígitos`,
-      );
+      throw new BadRequestException(`El código ${codigo} debe tener 1, 2, 4 o 6 dígitos`);
     }
-    return parentLength === 0 ? null : Number(str.slice(0, parentLength));
-  }
-
-  private assertPadreExiste(codigo: number) {
-    const padre = this.parentCodigo(codigo);
-    if (padre !== null && !this.cuentas.some(c => c.codigo === padre)) {
-      throw new BadRequestException(
-        `No existe la cuenta padre ${padre} para el código ${codigo}`,
-      );
+    const padre = Number(str.slice(0, parentLength));
+    if (parentLength > 0 && !this.cuentas.some(c => c.codigo === padre)) {
+      throw new BadRequestException(`No existe la cuenta padre ${padre} para el código ${codigo}`);
     }
   }
 
