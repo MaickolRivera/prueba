@@ -20,12 +20,21 @@ function App() {
   }, [])
 
   return (
-    <main>
-      <h1>Arranque de la prueba técnica</h1>
-      <p>
-        Esta pantalla existe solo para comprobar que el frontend le llega a la API.
-        Bórrala y construye lo tuyo.
-      </p>
+    <main className="flex items-center justify-center h-screen flex-col gap-6">
+      <h1 className="text-2xl font-bold">Aravia</h1>
+
+      <p>Software Contable</p>
+
+      <form action="" method="post" className="flex flex-row gap-4">
+
+        <input className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" placeholder="codigo" />
+        <input className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" placeholder="Nombre" />
+
+        <button className='border bg-gray-300 text-black px-5 rounded-md' type="submit">Enviar</button>
+
+      </form>
+
+      {}
 
       {estado.tipo === 'cargando' && <p>Consultando la API...</p>}
       {estado.tipo === 'ok' && <p>La API respondió: {estado.mensaje}</p>}
