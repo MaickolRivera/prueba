@@ -17,11 +17,6 @@ export class CuentaController {
     return this.cuentaService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cuentaService.findOne(+id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCuentaDto: UpdateCuentaDto) {
     return this.cuentaService.update(+id, updateCuentaDto);
