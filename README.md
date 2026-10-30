@@ -1,4 +1,4 @@
-# Arranque de la prueba técnica full-stack
+# Arranque de la prueba técnica full-stack 
 
 Backend y frontend listos para correr, ya conectados entre sí. Es el punto de partida de la prueba, para que no gastes tiempo en instalar y configurar.
 
